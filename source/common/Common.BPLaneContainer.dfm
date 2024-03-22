@@ -29,7 +29,7 @@ object BPLaneContainer: TBPLaneContainer
     BorderStyle = cxcbsNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -7
+    Font.Height = -15
     Font.Name = 'Pretendard Variable'
     Font.Style = []
     ParentFont = False
@@ -37,8 +37,6 @@ object BPLaneContainer: TBPLaneContainer
     LookAndFeel.NativeStyle = False
     LookAndFeel.ScrollbarMode = sbmTouch
     LookAndFeel.ScrollMode = scmSmooth
-    ExplicitWidth = 498
-    ExplicitHeight = 260
     object GameView: TcxGridDBTableView
       PopupMenu = LanePopupMenu
       Navigator.Buttons.CustomButtons = <>
@@ -57,8 +55,8 @@ object BPLaneContainer: TBPLaneContainer
       OptionsView.ColumnAutoWidth = True
       OptionsView.GroupByBox = False
       Styles.Header = BPDM.StyleHeader1
-      Styles.Inactive = BPDM.StyleSelection2
-      Styles.Selection = BPDM.StyleSelection2
+      Styles.Inactive = BPDM.StyleSelection
+      Styles.Selection = BPDM.StyleSelection
       object GameViewdirection: TcxGridDBColumn
         Caption = #8596
         DataBinding.FieldName = 'direction'
@@ -199,7 +197,6 @@ object BPLaneContainer: TBPLaneContainer
     ShowHint = True
     TabOrder = 0
     StyleElements = []
-    ExplicitWidth = 500
     object FrameNoLabel: TLabel
       AlignWithMargins = True
       Left = 950
@@ -365,6 +362,7 @@ object BPLaneContainer: TBPLaneContainer
     Align = alBottom
     BevelOuter = bvNone
     Caption = #50696#49345' '#51333#47308#49884#44033
+    Color = 5393480
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -372,15 +370,12 @@ object BPLaneContainer: TBPLaneContainer
     Font.Name = 'Pretendard Variable'
     Font.Style = []
     ParentBackground = False
-    ParentColor = True
     ParentCtl3D = False
     ParentFont = False
     PopupMenu = LanePopupMenu
     TabOrder = 2
     VerticalAlignment = taAlignBottom
     StyleElements = []
-    ExplicitTop = 356
-    ExplicitWidth = 500
   end
   object PaymentInfoPanel: TPanel
     Left = 0
@@ -392,6 +387,7 @@ object BPLaneContainer: TBPLaneContainer
     Align = alBottom
     BevelOuter = bvNone
     Caption = #44208#51228#54624' '#44552#50529
+    Color = 5393480
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 8831471
@@ -399,15 +395,12 @@ object BPLaneContainer: TBPLaneContainer
     Font.Name = 'Pretendard Variable'
     Font.Style = []
     ParentBackground = False
-    ParentColor = True
     ParentCtl3D = False
     ParentFont = False
     PopupMenu = LanePopupMenu
     TabOrder = 3
     VerticalAlignment = taAlignTop
     StyleElements = []
-    ExplicitTop = 380
-    ExplicitWidth = 500
   end
   object SaleGrid: TcxGrid
     AlignWithMargins = True
@@ -423,7 +416,7 @@ object BPLaneContainer: TBPLaneContainer
     BorderStyle = cxcbsNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -7
+    Font.Height = -15
     Font.Name = 'Pretendard Variable'
     Font.Style = []
     ParentFont = False
@@ -431,8 +424,6 @@ object BPLaneContainer: TBPLaneContainer
     LookAndFeel.NativeStyle = False
     LookAndFeel.ScrollbarMode = sbmTouch
     LookAndFeel.ScrollMode = scmSmooth
-    ExplicitTop = 308
-    ExplicitWidth = 498
     object SaleView: TcxGridDBTableView
       PopupMenu = LanePopupMenu
       Navigator.Buttons.CustomButtons = <>
@@ -640,6 +631,7 @@ object BPLaneContainer: TBPLaneContainer
       Caption = #48176#51221' '#44288#47532
       ImageIndex = 4
       ImageName = 'bowling_16px'
+      ShortCut = 32843
       OnClick = mniGameAssignClick
     end
     object mniSaleView: TMenuItem
@@ -680,23 +672,26 @@ object BPLaneContainer: TBPLaneContainer
       ImageIndex = 0
       ImageName = 'empty_flag_16px'
       object mniPinSetterOn: TMenuItem
-        Caption = #54592' '#49464#53552' On'
+        Caption = #44592#44228' On'
+        ShortCut = 32857
         OnClick = mniPinSetterOnClick
       end
       object mniPinSetterOff: TMenuItem
-        Caption = #54592' '#49464#53552' Off'
+        Caption = #44592#44228' Off'
+        ShortCut = 32856
         OnClick = mniPinSetterOffClick
       end
       object mniMonitorOn: TMenuItem
-        Caption = #44592#44228' On'
+        Caption = #47784#45768#53552' On'
         OnClick = mniMonitorOnClick
       end
       object mniMonitorOff: TMenuItem
-        Caption = #44592#44228' Off'
+        Caption = #47784#45768#53552' Off'
         OnClick = mniMonitorOffClick
       end
       object mniPinSetting1: TMenuItem
         Caption = #54592' '#49464#54021' #1'
+        ShortCut = 32853
         OnClick = mniPinSetting1Click
       end
       object mniPinSetting2: TMenuItem

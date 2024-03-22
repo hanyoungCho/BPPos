@@ -885,7 +885,7 @@ object BPAssignGameForm: TBPAssignGameForm
             Top = 11
             Width = 38
             Height = 27
-            Alignment = taCenter
+            Alignment = taRightJustify
             AutoSize = False
             Caption = '99D'
             Layout = tlCenter

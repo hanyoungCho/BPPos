@@ -75,6 +75,7 @@ type
     QRScorePrintList: TABSQuery;
     QRScorePrintDetailList: TABSQuery;
     QRScorePrintGameList: TABSQuery;
+    QRPaymentSaleItem: TABSQuery;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure MariaDBBeforeConnect(Sender: TObject);
@@ -127,6 +128,7 @@ type
     function RefreshReceipt(var AResMsg: string): Boolean;
     function RefreshSaleItem(const AReceiptNo: string; var AResMsg: string): Boolean;
     function RefreshPayment(const AReceiptNo: string; var AResMsg: string): Boolean;
+    function RefreshPaymentSaleItem(const AReceiptNo: string; ASeq: Integer; var AResMsg: string): Boolean;
     function RefreshMemberList(var AResMsg: string): Boolean; overload;
     function RefreshMemberList(const AFieldName, ASearchValue: string; var AResMsg: string): Boolean; overload;
     function RefreshMemberList(const AFieldName, ASearchValue, AFieldName2, ASearchValue2: string; var AResMsg: string): Boolean; overload;
@@ -155,7 +157,7 @@ type
     function SetBowlerThrowOrder(const AAssignNo, ABowlerId: string; const AOrderSeq: Integer; var AResMsg: string): Boolean;
     function RemoveBowler(const AAssignNo, ABowlerId: string; var AResMsg: string): Boolean;
     function AssignGame(const ARallyMode: Boolean; const AReceiptNo: string; const AAR: TArray<TGameAssignRec>; var AResMsg: string): Boolean;
-    function AddBowler(const ALaneNo: ShortInt; const AAssignNo: string; const ABowlerRec: TBowlerRec; var AResMsg: string): Boolean;
+    function AddBowler(const ALaneNo: ShortInt; const AAssignNo: string; const ABowlerRec: TBowlerRec; var AResMsg, ABowlerId: string): Boolean;
     function ChangeBowler(const ALaneNo: ShortInt; const AAssignNo: string; const ANewBowlerRec: TBowlerRec; var AResMsg: string): Boolean;
     function RelocateLane(const ALaneNo, ATargetLaneNo: ShortInt; var AResMsg: string): Boolean;
     function RelocateBowler(const AAssignNo, ABowlerId: string; const ATargetLaneNo: ShortInt; var AResMsg, ATargetAssignNo, ATargetBowlerId: string): Boolean;
@@ -531,7 +533,7 @@ begin
       SQL.Add(', entry_seq INTEGER DEFAULT 0'); //대회 참가자 순번
       SQL.Add(', handy SMALLINT DEFAULT 0'); //핸디
       SQL.Add(', shoes_rent_yn LOGICAL DEFAULT False'); //볼링화 대여 여부
-      SQL.Add(', bowler_id VARCHAR(3)'); //01A, 01B...
+      SQL.Add(', bowler_id VARCHAR(6)'); //01A, 01B...
       SQL.Add(', bowler_nm VARCHAR(50)'); //볼러명
       SQL.Add(', member_no VARCHAR(8)'); //회원 번호
       SQL.Add(', membership_seq INTEGER DEFAULT 0'); //회원권 구매 순번(0보다 큰 값이면 회원권을 사용하여 배정한 것으로 판단)
@@ -597,7 +599,7 @@ begin
       SQL.Add(', entry_seq INTEGER DEFAULT 0'); //대회 참가자 순번
       SQL.Add(', handy SMALLINT DEFAULT 0');
       SQL.Add(', shoes_rent_yn LOGICAL DEFAULT False');
-      SQL.Add(', bowler_id VARCHAR(3)');
+      SQL.Add(', bowler_id VARCHAR(6)');
       SQL.Add(', bowler_nm VARCHAR(50)');
       SQL.Add(', member_no VARCHAR(8)');
       SQL.Add(', membership_seq INTEGER DEFAULT 0'); //회원권 구매 순번(0보다 큰 값이면 회원권을 사용하여 배정한 것으로 판단)
@@ -1867,6 +1869,64 @@ begin
 {$ENDIF}
   end;
 end;
+function TBPDM.RefreshPaymentSaleItem(const AReceiptNo: string; ASeq: Integer; var AResMsg: string): Boolean;
+var
+  BM: TBookmark;
+  i: integer;
+begin
+  Result := False;
+
+  with QRPaymentSaleItem do
+  try
+    BM := GetBookmark;
+    DisableControls;
+    Close;
+    try
+      SQL.Clear;
+      SQL.Add('SELECT A.*');
+      SQL.ADD('  , B.lane_no');
+      SQL.Add('  , C.assign_seq');
+      SQL.Add('  , C.assign_index');
+      SQL.Add('  , C.assign_index_nm');
+      SQL.ADD('  , (COALESCE(B.lane_no, A.assign_lane_no)) AS current_lane_no');
+      SQL.ADD('  , (CASE WHEN COALESCE(B.lane_no, A.assign_lane_no) = 0 THEN ''일반'' ELSE COALESCE(B.lane_no, A.assign_lane_no) END) AS calc_current_lane_no');
+      SQL.Add('FROM TBSaleItem A');
+      SQL.Add('LEFT OUTER JOIN (SELECT assign_lane_no, lane_no FROM MEMORY MTGameList GROUP BY assign_lane_no, lane_no) B');
+      SQL.Add('ON (');
+      SQL.Add('  A.assign_lane_no = B.assign_lane_no');
+      SQL.Add(')');
+      SQL.Add('LEFT OUTER JOIN MEMORY MTAssignList C');
+      SQL.Add('ON (');
+      SQL.Add('  A.assign_no = C.assign_no');
+      SQL.Add('  AND A.bowler_id = C.bowler_id');
+      SQL.Add(')');
+      SQL.Add(Format('WHERE A.receipt_no = %s', [AReceiptNo.QuotedString]));
+      SQL.Add(Format('AND A.payment_seq = %d', [ASeq]));
+      SQL.Add('AND A.payment_yn = True'); //결제 처리가 완료된 주문
+      SQL.Add('ORDER BY B.lane_no, C.assign_index, A.assign_lane_no, A.prod_div, A.prod_nm;');
+      Open;
+      if BookmarkValid(BM) then
+        GotoBookmark(BM);
+{$IFDEF DEBUG}
+      UpdateLog(Format('RefreshPaymentSaleItem.RecordCount = %d', [RecordCount]));
+{$ENDIF}
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        AResMsg := E.Message;
+        UpdateLog(Format('RefreshPaymentSaleItem(ReceiptNo: %s).Exception = %s', [AReceiptNo, E.Message]));
+      end;
+    end;
+  finally
+    EnableControls;
+    if Assigned(BM) then
+      FreeBookmark(BM);
+{$IFDEF DEBUG}
+    SQL.SaveToFile(Global.DirInfo.LogDir + 'RefreshPaymentSaleItem.sql');
+{$ENDIF}
+  end;
+end;
 function TBPDM.RefreshMemberList(var AResMsg: string): Boolean;
 begin
   Result := RefreshMemberList('', '', '', '', AResMsg);
@@ -2733,8 +2793,8 @@ var
   JO, RO: HCkJsonObject;
   JA: HCkJsonArray;
   PI: TProdItemRec;
-  LReceiptNo, LReqJson, LRespJson, LResCode, LAssignNo: string;
-  LCount, LLaneNo: Integer;
+  LReceiptNo, LReqJson, LRespJson, LResCode, LAssignNo, LRallyAssignNo: string;
+  LCount, LLaneNo, LRallyLaneNo: Integer;
   I, J: ShortInt;
 begin
   Result := False;
@@ -2789,6 +2849,7 @@ begin
       AResMsg := CkJsonObject__stringOf(JO, 'result_msg');
       if (LResCode <> CO_RESULT_SUCCESS) then
         raise Exception.Create(Format('게임서버 Error #%s, %s', [LResCode, AResMsg]));
+      (*
       //대회 모드
       if ARallyMode then
       begin
@@ -2812,7 +2873,8 @@ begin
                   PI.Clear;
                   PI.AssignLaneNo := LLaneNo;
                   PI.AssignNo := LAssignNo;
-                  PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+                  //PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+                  PI.BowlerId := CkJsonObject__stringOf(RO, PWideChar('bowler_id_' + IntToStr(J)));
                   PI.ProdDiv := AAR[I].Bowlers[J].ProdInfo.ProdDiv;
                   PI.ProdDetailDiv := AAR[I].Bowlers[J].ProdInfo.ProdDetailDiv;
                   PI.ProdCode := AAR[I].Bowlers[J].ProdInfo.ProdCode;
@@ -2856,7 +2918,7 @@ begin
            (not UpdateReceipt(AReceiptNo, AResMsg)) then
           raise Exception.Create(AResMsg);
       end
-      else //if not ARallyMode then
+      else //if not ARallyMode then     *)
       begin
         JA := CkJsonObject_ArrayOf(JO, 'result_data');
         LCount := CkJsonArray_getSize(JA);
@@ -2867,6 +2929,13 @@ begin
             RO := CkJsonArray_ObjectAt(JA, I);
             for J := 0 to Pred(Length(AAR[I].Bowlers)) do
             begin
+
+              if (I = 0) and (ARallyMode = True) then
+              begin
+                LRallyLaneNo := CkJsonObject_IntOf(RO, 'lane_no');
+                LRallyAssignNo := CkJsonObject__stringOf(RO, 'assign_no');
+              end;
+
               LLaneNo := CkJsonObject_IntOf(RO, 'lane_no');
               LAssignNo := CkJsonObject__stringOf(RO, 'assign_no');
               if (LLaneNo = AAR[I].LaneNo) then
@@ -2874,19 +2943,37 @@ begin
                 if not AAR[I].Bowlers[J].ProdInfo.ProdCode.IsEmpty then
                 begin
                   PI.Clear;
-                  PI.AssignLaneNo := LLaneNo;
-                  PI.AssignNo := LAssignNo;
-                  PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+
+                  if (ARallyMode = True) then
+                  begin
+                    PI.AssignLaneNo := LRallyLaneNo;
+                    PI.AssignNo := LRallyAssignNo;
+                  end
+                  else
+                  begin
+                    PI.AssignLaneNo := LLaneNo;
+                    PI.AssignNo := LAssignNo;
+                  end;
+
+                  //PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+                  PI.BowlerId := CkJsonObject__stringOf(RO, PWideChar('bowler_id_' + IntToStr(J + 1)));
                   PI.ProdDiv := AAR[I].Bowlers[J].ProdInfo.ProdDiv;
                   PI.ProdDetailDiv := AAR[I].Bowlers[J].ProdInfo.ProdDetailDiv;
                   PI.ProdCode := AAR[I].Bowlers[J].ProdInfo.ProdCode;
                   PI.ProdName := AAR[I].Bowlers[J].ProdInfo.ProdName;
 
-                  //chy test
-                  if (J > 0) and (AAR[I].GameDiv = CO_RATEPLAN_TIME) then
-                    PI.ProdAmt := 0
-                  else
+                  if (ARallyMode = True) then
+                  begin
                     PI.ProdAmt := AAR[I].Bowlers[J].ProdInfo.ProdAmt;
+                  end
+                  else
+                  begin
+                    //chy test
+                    if (J > 0) and (AAR[I].GameDiv = CO_RATEPLAN_TIME) then
+                      PI.ProdAmt := 0
+                    else
+                      PI.ProdAmt := AAR[I].Bowlers[J].ProdInfo.ProdAmt;
+                  end;
 
                   if (AAR[I].GameDiv = CO_RATEPLAN_GAME) and (AAR[I].Bowlers[J].FeeDiv = CO_GAMEFEE_BASIC) and (PI.ProdCode <> Global.StoreInfo.DefaultGameProdCode) then
                     PI.OrderQty := 1
@@ -2898,13 +2985,15 @@ begin
                     raise Exception.Create(AResMsg);
                 end;
                 //볼링화 대여료
-                if AAR[I].Bowlers[J].ShoesRent and
+                if (ARallyMode = False) and
+                   (AAR[I].Bowlers[J].ShoesRent) and
                    (not AAR[I].Bowlers[J].ShoesFree) then
                 begin
                   PI.Clear;
                   PI.AssignLaneNo := LLaneNo;
                   PI.AssignNo := LAssignNo;
-                  PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+                  //PI.BowlerId := AAR[I].Bowlers[J].BowlerId;
+                  PI.BowlerId := CkJsonObject__stringOf(RO, PWideChar('bowler_id_' + IntToStr(J + 1)));
                   PI.ProdDiv := CO_PROD_RENT;
                   PI.ProdDetailDiv := Global.StoreInfo.ShoesRentProdDetailDiv;
                   PI.ProdCode := Global.StoreInfo.ShoesRentProdCode;
@@ -2939,7 +3028,7 @@ begin
     CkJsonObject_Dispose(JO);
   end;
 end;
-function TBPDM.AddBowler(const ALaneNo: ShortInt; const AAssignNo: string; const ABowlerRec: TBowlerRec; var AResMsg: string): Boolean;
+function TBPDM.AddBowler(const ALaneNo: ShortInt; const AAssignNo: string; const ABowlerRec: TBowlerRec; var AResMsg, ABowlerId: string): Boolean;
 const
   CS_API = 'Z106_regBowler';
 var
@@ -2977,6 +3066,7 @@ begin
         raise Exception.Create(CkJsonObject__lastErrorText(JO));
       LResCode := CkJsonObject__stringOf(JO, 'result_cd');
       AResMsg := CkJsonObject__stringOf(JO, 'result_msg');
+      ABowlerId := CkJsonObject__stringOf(JO, 'bowler_id');
       if (LResCode <> CO_RESULT_SUCCESS) then
         raise Exception.Create(Format('게임서버 Error #%s, %s', [LResCode, AResMsg]));
       Result := True;

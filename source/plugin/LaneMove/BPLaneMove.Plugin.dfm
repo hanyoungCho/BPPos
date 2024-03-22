@@ -294,6 +294,7 @@ object BPLaneMoveForm: TBPLaneMoveForm
         0000000000000000000000000000000000000000000000000000}
       ParentDoubleBuffered = True
       TabOrder = 2
+      Visible = False
       OnClick = btnBowlerToLeftClick
     end
     object btnBowlerToRight: TBitBtn
@@ -577,6 +578,7 @@ object BPLaneMoveForm: TBPLaneMoveForm
         0000000000000000000000000000000000000000000000000000}
       ParentDoubleBuffered = True
       TabOrder = 3
+      Visible = False
       OnClick = btnLaneToLeftClick
     end
     object btnLaneToRight: TBitBtn

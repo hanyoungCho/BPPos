@@ -55,7 +55,7 @@ object BPLaneViewForm: TBPLaneViewForm
         Margins.Bottom = 5
         Action = actPinSetterOn
         Align = alLeft
-        Caption = #54592' '#49464#53552' On'
+        Caption = #44592#44228' On'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -15
@@ -296,7 +296,7 @@ object BPLaneViewForm: TBPLaneViewForm
         Margins.Bottom = 5
         Action = actPinSetterOff
         Align = alLeft
-        Caption = #54592' '#49464#53552' Off'
+        Caption = #44592#44228' Off'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -15
@@ -958,14 +958,14 @@ object BPLaneViewForm: TBPLaneViewForm
     Top = 280
     object actPinSetterOn: TAction
       Category = 'GameMenu'
-      Caption = #54592' '#49464#53552' On'
+      Caption = #44592#44228' On'
       ImageIndex = 43
       ImageName = 'ToggleOn_32px'
       OnExecute = actPinSetterOnExecute
     end
     object actPinSetterOff: TAction
       Category = 'GameMenu'
-      Caption = #54592' '#49464#53552' Off'
+      Caption = #44592#44228' Off'
       ImageIndex = 44
       ImageName = 'ToggleOff_32px'
       OnExecute = actPinSetterOffExecute
@@ -1113,6 +1113,7 @@ object BPLaneViewForm: TBPLaneViewForm
     Top = 928
     object mniGameAssign: TMenuItem
       Caption = #48176#51221' '#44288#47532
+      ShortCut = 32843
       OnClick = mniGameAssignClick
     end
     object mniSaleView: TMenuItem
@@ -1155,23 +1156,26 @@ object BPLaneViewForm: TBPLaneViewForm
     object mniLaneControl: TMenuItem
       Caption = #47112#51064' '#51228#50612
       object mniPinSetterOn: TMenuItem
-        Caption = #54592' '#49464#53552' On'
+        Caption = #44592#44228' On'
+        ShortCut = 32857
         OnClick = mniPinSetterOnClick
       end
       object mniPinSetterOff: TMenuItem
-        Caption = #54592' '#49464#53552' Off'
+        Caption = #44592#44228' Off'
+        ShortCut = 32856
         OnClick = mniPinSetterOffClick
       end
       object mniMonitorOn: TMenuItem
-        Caption = #44592#44228' On'
+        Caption = #47784#45768#53552' On'
         OnClick = mniMonitorOnClick
       end
       object mniMonitorOff: TMenuItem
-        Caption = #44592#44228' Off'
+        Caption = #47784#45768#53552' Off'
         OnClick = mniMonitorOffClick
       end
       object mniPinSetting1: TMenuItem
         Caption = #54592' '#49464#54021' #1'
+        ShortCut = 32853
         OnClick = mniPinSetting1Click
       end
       object mniPinSetting2: TMenuItem

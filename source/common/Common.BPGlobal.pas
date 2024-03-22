@@ -449,6 +449,7 @@ type
     procedure LanesClear;
     function LaneIndex(const ALaneNo: ShortInt = -1): ShortInt;
     function AssignLaneNo(const ALaneNo: ShortInt = -1): ShortInt;
+    function AssignNo(const ALaneNo: ShortInt = -1): String;
     function SelectedLaneList: string;
     function AssignLaneNoList: string;
     property LaneCount: ShortInt read GetLaneCount write SetLaneCount;
@@ -770,6 +771,7 @@ procedure PayLog(const AReceiptNo: string; const AIsApproval, AManualInput: Bool
 procedure SendToPlugin(const ACommand: string; const ATargetId: Integer); overload;
 procedure SendToPlugin(const ACommand: string; const ATargetId: Integer; const AValue: Variant); overload;
 procedure SendToPluginLaneStatus(const ATargetId: Integer; const AIndex, AStatus: ShortInt);
+procedure SendToPluginLaneHold(const ATargetId: Integer; const AHold: Boolean);
 procedure SendToMainForm(const ACommand: string); overload;
 procedure SendToMainForm(const ACommand: string; const AValue: Variant); overload;
 function ShowPluginModal(const APluginName, ACommand: string; AParams: TArray<TPluginParamRec>): TModalResult;
@@ -902,6 +904,20 @@ begin
       Free;
     end;
 end;
+procedure SendToPluginLaneHold(const ATargetId: Integer; const AHold: Boolean);
+begin
+  if (ATargetId = 0) then
+    Exit;
+  with TPluginMessage.Create(nil) do
+    try
+      Command := CPC_LANE_HOLD;
+      AddParams(CPP_VALUE, AHold);
+      PluginMessageToId(ATargetId);
+    finally
+      Free;
+    end;
+end;
+
 function ShowPluginModal(const APluginName, ACommand: string; AParams: TArray<TPluginParamRec>): TModalResult;
 var
   PM: TPluginMessage;
@@ -2346,6 +2362,19 @@ begin
     if (Result = -1) then
       Result := ALaneNo;
   end;
+end;
+function TLaneInfo.AssignNo(const ALaneNo: ShortInt): String;  // 대회일경우만 사용
+var
+  LLaneNo: ShortInt;
+begin
+  Result := '';
+  LLaneNo := ALaneNo;
+  for var I: ShortInt := 0 to Pred(LaneCount) do
+    if (Lanes[I].LaneNo = LLaneNo) then
+    begin
+      Result := Lanes[I].Container.AssignNo;
+      Break;
+    end;
 end;
 procedure TLaneInfo.SetSelectedLaneNo(const AValue: ShortInt);
 begin

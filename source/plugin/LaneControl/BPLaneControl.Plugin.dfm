@@ -51,7 +51,7 @@ object BPLaneControlForm: TBPLaneControlForm
       Left = 43
       Top = 5
       Width = 95
-      Height = 28
+      Height = 13
       Margins.Left = 5
       Margins.Top = 5
       Margins.Right = 5
@@ -65,7 +65,6 @@ object BPLaneControlForm: TBPLaneControlForm
       Font.Style = []
       ParentFont = False
       StyleElements = []
-      ExplicitHeight = 13
     end
     object panHeaderToolbar: TPanel
       AlignWithMargins = True
@@ -660,8 +659,8 @@ object BPLaneControlForm: TBPLaneControlForm
           AlignWithMargins = True
           Left = 101
           Top = 6
-          Width = 887
-          Height = 34
+          Width = 5
+          Height = 23
           Margins.Left = 0
           Margins.Top = 5
           Margins.Right = 5
@@ -678,8 +677,6 @@ object BPLaneControlForm: TBPLaneControlForm
           Transparent = True
           Layout = tlCenter
           StyleElements = [seClient, seBorder]
-          ExplicitWidth = 5
-          ExplicitHeight = 23
         end
       end
     end

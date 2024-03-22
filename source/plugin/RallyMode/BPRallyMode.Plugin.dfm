@@ -49,7 +49,7 @@ object BPRallyModeForm: TBPRallyModeForm
       Left = 43
       Top = 5
       Width = 95
-      Height = 28
+      Height = 13
       Margins.Left = 5
       Margins.Top = 5
       Margins.Right = 5
@@ -63,7 +63,6 @@ object BPRallyModeForm: TBPRallyModeForm
       Font.Style = []
       ParentFont = False
       StyleElements = []
-      ExplicitHeight = 13
     end
     object panHeaderToolbar: TPanel
       AlignWithMargins = True

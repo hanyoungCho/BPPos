@@ -252,7 +252,16 @@ type
     cbxReceiptNoList: TComboBox;
     V1use_point: TcxGridDBBandedColumn;
     edtUsePointTotal: TLabeledEdit;
-    Memo1: TMemo;
+    G4: TcxGrid;
+    V4: TcxGridDBBandedTableView;
+    V4prod_cd: TcxGridDBBandedColumn;
+    V4prod_nm: TcxGridDBBandedColumn;
+    V4calc_sale_amt: TcxGridDBBandedColumn;
+    L4: TcxGridLevel;
+    V4bowler_id: TcxGridDBBandedColumn;
+    dsrPaymentSaleItem: TDataSource;
+    V2seq: TcxGridDBBandedColumn;
+    Panel1: TPanel;
     procedure PluginModuleShow(Sender: TObject);
     procedure PluginModuleClose(Sender: TObject; var Action: TCloseAction);
     procedure PluginModuleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -315,6 +324,7 @@ type
     procedure V2DataControllerSummaryAfterSummary(ASender: TcxDataSummary);
     procedure V3DataControllerSummaryAfterSummary(ASender: TcxDataSummary);
     procedure OnReceiptNoListChange(Sender: TObject);
+    procedure V2FocusedRecordChanged(Sender: TcxCustomGridTableView; APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord; ANewItemRecordFocusingChanged: Boolean);
   private
     { Private declarations }
     FOwnerID: Integer;
@@ -344,6 +354,7 @@ type
     procedure RefreshAll(const ADetailOnly: Boolean=False);
     procedure RefreshSaleData(const AReceiptNo: string; const AProdCode: string='');
     procedure RefreshPayment;
+    procedure RefreshPaymentSaleData;
     function RefreshReceiptNoList(var AResMsg: string): Boolean;
     procedure RefreshSaleSummary;
     procedure AddSaleItem(const AIndex: ShortInt);
@@ -737,6 +748,7 @@ var
   LResMsg: string;
 begin
   try
+    //chy test
     if not BPDM.RefreshPayment(Global.ReceiptInfo.SelectedReceiptNo, LResMsg) then
       raise Exception.Create(LResMsg);
   except
@@ -1226,7 +1238,7 @@ begin
     //TSpeedButton(Sender).GroupIndex := LCN_LANE_GROUP_INDEX;
 
     TSpeedButton(Sender).Down := True;
-    Memo1.Lines.Add('down');
+    //Memo1.Lines.Add('down');
   end
   else
   begin
@@ -1245,7 +1257,7 @@ begin
 
     TSpeedButton(Sender).GroupIndex := 0;
     //TSpeedButton(Sender).Down := False;       //GroupIndex가 0이 되면 자동으로 Down이 False가 되므로 사실상 필요없는 부분
-    Memo1.Lines.Add('up');
+    //Memo1.Lines.Add('up');
   end;
 
   ClearMemberInfo;
@@ -1456,6 +1468,25 @@ begin
   end;
   DispSaleResult;
 end;
+procedure TBPSalePosForm.V2FocusedRecordChanged(Sender: TcxCustomGridTableView;  APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;  ANewItemRecordFocusingChanged: Boolean);
+begin
+  if G2.Enabled then
+    RefreshPaymentSaleData;
+end;
+
+procedure TBPSalePosForm.RefreshPaymentSaleData;
+var
+  LResMsg: string;
+begin
+  try
+    if not BPDM.RefreshPaymentSaleItem(Global.ReceiptInfo.SelectedReceiptNo, V2.DataController.DataSet.FieldByName('seq').AsInteger, LResMsg) then
+      raise Exception.Create(LResMsg);
+  except
+    on E: Exception do
+      BPMsgBox(Self.Handle, mtError, '알림', '결제 상품 내역을 조회할 수 없습니다.' + _BR + ErrorString(E.Message), ['확인'], 5);
+  end;
+end;
+
 procedure TBPSalePosForm.V3DataControllerSummaryAfterSummary(ASender: TcxDataSummary);
 begin
   with V3.DataController.Summary do

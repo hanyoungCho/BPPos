@@ -251,19 +251,20 @@ var
 begin
   with TcxGridDBTableView(Sender) do
   begin
-    LBowlerId := AViewInfo.GridRecord.Values[GetColumnByFieldName('bowler_id').Index];
-    if VarIsNull(LBowlerId) then
-      LBowlerId := '';
+    //LBowlerId := AViewInfo.GridRecord.Values[GetColumnByFieldName('bowler_id').Index];
+    //if VarIsNull(LBowlerId) then
+      //LBowlerId := '';
     LBowlerName := AViewInfo.GridRecord.Values[GetColumnByFieldName('bowler_nm').Index];
     if VarIsNull(LBowlerName) then
       LBowlerName := '';
-    LBowlerName := IfThen(LBowlerId = LBowlerName, '', ' ' + LBowlerName);
+    //LBowlerName := IfThen(LBowlerId = LBowlerName, '', ' ' + LBowlerName);
     LProdName := AViewInfo.GridRecord.Values[GetColumnByFieldName('prod_nm').Index];
     if VarIsNull(LProdName) then
       LProdName := '';
     AViewInfo.EditViewInfo.Paint(ACanvas);
     ACanvas.Brush.Style := bsClear;
-    ACanvas.DrawText(Format('%s%s %s', [LBowlerId, LBowlerName, LProdName]), AViewInfo.TextAreaBounds, cxAlignLeft or cxAlignVCenter);
+    //ACanvas.DrawText(Format('%s%s %s', [LBowlerId, LBowlerName, LProdName]), AViewInfo.TextAreaBounds, cxAlignLeft or cxAlignVCenter);
+    ACanvas.DrawText(Format('%s %s', [LBowlerName, LProdName]), AViewInfo.TextAreaBounds, cxAlignLeft or cxAlignVCenter);
     ADone := True;
   end;
 end;
@@ -368,6 +369,8 @@ procedure TBPLaneContainer.mniLaneHoldClick(Sender: TObject);
 var
   LJoBName, LResMsg: string;
 begin
+  SendToPluginLaneHold(Global.Plugin.LaneViewPluginId, not (LaneStatus = CO_LANE_HOLD));
+  {
   LJobName := TMenuItem(Sender).Caption;
   try
     if (BPMsgBox(Self.Handle, mtConfirmation, '확인', Format('<B>%d</B> 레인에 <B>', [LaneNo]) + ErrorString(LJobName) + '</B> 명령을 전송하시겠습니까?', ['예', '아니오']) <> mrOk) then
@@ -381,6 +384,7 @@ begin
       BPMsgBox(Self.Handle, mtWarning, '알림',
         Format('%s 명령 전송에 실패하였습니다.', [LJobName]) + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
+  }
 end;
 procedure TBPLaneContainer.mniGameCancelClick(Sender: TObject);
 var
@@ -698,14 +702,24 @@ end;
 procedure TBPLaneContainer.RefreshSale;
 var
   BM: TBookmark;
+  sAssignNo: String;
+  nAssignLaneNo: Integer;
 begin
-  AssignLaneNo := Global.LaneInfo.AssignLaneNo(LaneNo);
+  nAssignLaneNo := Global.LaneInfo.AssignLaneNo(LaneNo);
+  sAssignNo := AssignNo;
+
+  if RallyMode = True then
+  begin
+    sAssignNo := Global.LaneInfo.AssignNo(nAssignLaneNo);
+    nAssignLaneNo := LaneNo;
+  end;
+
   with SaleRemainDataSet do
   try
     DisableControls;
     Close;
-    Params.ParamByName('p_assign_lane_no').AsInteger := AssignLaneNo;
-    Params.ParamByName('p_assign_no').AsString := AssignNo;
+    Params.ParamByName('p_assign_lane_no').AsInteger := nAssignLaneNo;
+    Params.ParamByName('p_assign_no').AsString := sAssignNo;
     Open;
     if (RecordCount > 0) then
       ChargeRemainAmt := FieldByName('charge_total').AsInteger
@@ -720,8 +734,8 @@ begin
     DisableControls;
     try
       Close;
-      Params.ParamByName('p_assign_lane_no').AsInteger := AssignLaneNo;
-      Params.ParamByName('p_assign_no').AsString := AssignNo;
+      Params.ParamByName('p_assign_lane_no').AsInteger := nAssignLaneNo;
+      Params.ParamByName('p_assign_no').AsString := sAssignNo;
 //      Params.ParamByName('p_receipt_no').AsString := ReceiptNo;
       Open;
       if BookmarkValid(BM) then
@@ -743,7 +757,8 @@ end;
 procedure TBPLaneContainer.RefreshAll;
 var
   BM: TBookmark;
-  LDateTime: string;
+  LDateTime, sAssignIndexNm: string;
+  dtDateTime: TDatetime;
 begin
   with GameDataSet do
   try
@@ -763,9 +778,19 @@ begin
         LaneShiftmethod := CO_TABLE_SHIFT_GENERAL;
         LaneShiftCount := 0;
         GameInfoPanel.Caption := '';
+        GameInfoPanel.color := $00524C48;
       end
       else
       begin
+        with BPDM.GetABSDataSet('SELECT * FROM MEMORY MTAssignList WHERE lane_no = ' + IntToStr(LaneNo)) do
+        try
+          Last;
+          sAssignIndexNm := FieldByName('assign_index_nm').AsString;
+        finally
+          Close;
+          Free;
+        end;
+
         LaneStatus := FieldByName('lane_status').AsInteger;
         LeagueMode := FieldByName('league_yn').AsBoolean;
         FrameNo := FieldByName('frame_no').AsInteger;
@@ -774,7 +799,18 @@ begin
         LaneShiftmethod := FieldByName('lane_shift_method').AsString;
         LaneShiftCount := FieldByName('lane_shift_cnt').AsInteger;
         Last;
+        dtDateTime := FieldByName('expected_end_datetime').AsDateTime;
         LDateTime := FieldByName('expected_end_datetime').AsString;
+
+        GameInfoPanel.color := $00524C48;
+
+        if not LDateTime.IsEmpty then
+        begin
+          if Length(LDateTime) > 21 then
+            LDateTime := Copy(LDateTime, 12, 8)
+          else
+            LDateTime := Copy(LDateTime, 12, 7);
+        end;
         if (LaneStatus in [CO_LANE_HOLD, CO_LANE_END_UNPAID, CO_LANE_END, CO_LANE_MAINTENANCE]) then
         begin
           GameInfoPanel.Font.Color := GetLaneStatusColor(LaneStatus);
@@ -783,7 +819,14 @@ begin
         else
         begin
           GameInfoPanel.Font.Color := clWhite;
-          GameInfoPanel.Caption := IfThen(LDateTime.IsEmpty, '', LDateTime);
+          if Pos('예약', sAssignIndexNm) > 0 then
+            GameInfoPanel.Caption := sAssignIndexNm + ' / ' + IfThen(LDateTime.IsEmpty, '', LDateTime)
+          else
+            GameInfoPanel.Caption := IfThen(LDateTime.IsEmpty, '', LDateTime);
+
+          if (MinutesBetween(dtDateTime, Now) <= 10) then
+            GameInfoPanel.color := clred;
+
         end;
       end;
       if BookmarkValid(BM) then

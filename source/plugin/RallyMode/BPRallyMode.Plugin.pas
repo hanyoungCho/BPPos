@@ -1,5 +1,4 @@
 (*******************************************************************************
-
   Project     : 볼링픽 POS 시스템
   Title       : 대회 모드 플러그인
   Author      : 이선우
@@ -8,14 +7,10 @@
     Version   Date         Remark
     --------  ----------   -----------------------------------------------------
     1.0.0.0   2023-01-04   Initial Release.
-
   CopyrightⓒSolbiPOS Co., Ltd. 2008-2023 All rights reserved.
-
 *******************************************************************************)
 unit BPRallyMode.Plugin;
-
 interface
-
 uses
   { Native }
   WinApi.Windows, WinApi.Messages, System.Classes, System.SysUtils, Vcl.Forms, Vcl.Controls,
@@ -26,9 +21,7 @@ uses
   cxData, cxDataStorage, cxEdit, cxNavigator, dxDateRanges, dxScrollbarAnnotations, Data.DB,
   cxDBData, cxGridLevel, cxClasses, cxGridCustomView, cxGridCustomTableView, cxGridTableView,
   cxGridBandedTableView, cxGridDBBandedTableView, cxGrid, Vcl.ComCtrls, cxLabel, cxCheckBox;
-
 {$I ..\..\common\Common.BPCommon.inc}
-
 type
   TBPRallyModeForm = class(TPluginModule)
     panHeader: TPanel;
@@ -100,7 +93,6 @@ type
     V1lane_move_cnt: TcxGridDBBandedColumn;
     V1Column1: TcxGridDBBandedColumn;
     edtPrepareMin: TDBNumberEditEh;
-
     procedure PluginModuleClose(Sender: TObject; var Action: TCloseAction);
     procedure PluginModuleMessage(Sender: TObject; AMsg: TPluginMessage);
     procedure PluginModuleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -122,7 +114,6 @@ type
     FShiftMethod: string;
     FShiftCount: ShortInt;
     FWorking: Boolean;
-
     procedure ProcessMessages(AMsg: TPluginMessage);
     procedure RefreshRallyList(const AShowMsg: Boolean=True);
     function RefreshEntryList(var AResMsg: string): Boolean;
@@ -133,29 +124,21 @@ type
     constructor Create(AOwner: TComponent; AMsg: TPluginMessage=nil); override;
     destructor Destroy; override;
   end;
-
 implementation
-
 uses
   { Native }
   Vcl.Graphics, System.Variants, Vcl.Dialogs, System.DateUtils, System.StrUtils,
   { Project }
   Common.BPGlobal, Common.BPDM, Common.BPCommonLib, Common.LayeredForm, Common.BPMsgBox;
-
 var
   LF: TLayeredForm;
-
 {$R *.dfm}
-
 { TBPRallyModeForm }
-
 constructor TBPRallyModeForm.Create(AOwner: TComponent; AMsg: TPluginMessage);
 begin
   inherited Create(AOwner, AMsg);
-
   SetDoubleBuffered(Self, True);
   MakeRoundedControl(Self);
-
   FOwnerId := 0;
   FRallySeq := 0;
   FRallyTitle := '';
@@ -172,19 +155,16 @@ begin
       Pages[I].TabVisible := False;
     ActivePageIndex := 0;
   end;
-
   edtStartDate.Value := StartOfTheMonth(Now);
   edtEndDate.Value := EndOfTheMonth(Now);
   if not dsrClubList.DataSet.Active then
     dsrClubList.DataSet.Active := True;
-
   with cbxShiftMethod do
   begin
     for var I: ShortInt := 0 to High(CO_TABLE_SHIFT_LIST) do
       Items.AddObject(CO_TABLE_SHIFT_LIST[I].Caption + ' 이동', TObject(CO_TABLE_SHIFT_LIST[I].Code));
     ItemIndex := 0;
   end;
-
   with cbxShiftCount do
   begin
     Items.Add('<없음>');
@@ -192,28 +172,22 @@ begin
       Items.Add(Format('%d 레인씩 이동', [Succ(I) * 2]));
     ItemIndex := 0;
   end;
-
   if Assigned(AMsg) then
     ProcessMessages(AMsg);
 end;
-
 destructor TBPRallyModeForm.Destroy;
 begin
   LF.Release;
-
   inherited Destroy;
 end;
-
 procedure TBPRallyModeForm.PluginModuleClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
-
 procedure TBPRallyModeForm.PluginModuleMessage(Sender: TObject; AMsg: TPluginMessage);
 begin
   ProcessMessages(AMsg);
 end;
-
 procedure TBPRallyModeForm.ProcessMessages(AMsg: TPluginMessage);
 begin
   if (AMsg.Command = CPC_INIT) then
@@ -222,35 +196,29 @@ begin
     RefreshRallyList(False);
   end;
 end;
-
 procedure TBPRallyModeForm.PluginModuleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_ESCAPE) then
     Self.ModalResult := mrCancel;
 end;
-
 procedure TBPRallyModeForm.panHeaderMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   ReleaseCapture;
   PostMessage(Handle, WM_SYSCOMMAND, $F012, 0);
 end;
-
 procedure TBPRallyModeForm.btnCloseClick(Sender: TObject);
 begin
   Self.Close;
 end;
-
 procedure TBPRallyModeForm.btnRallyListClick(Sender: TObject);
 begin
   pgcMain.ActivePage := tabListView;
   panHeader.Caption := '대회 현황 조회';
 end;
-
 procedure TBPRallyModeForm.btnRefreshListClick(Sender: TObject);
 begin
   RefreshRallyList;
 end;
-
 procedure TBPRallyModeForm.btnSelectRallyClick(Sender: TObject);
 var
   LResMsg: string;
@@ -286,7 +254,6 @@ begin
       BPMsgBox(Self.Handle, mtWarning, '알림', '대회 참가자 목록을 조회할 수 없습니다.' + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
 end;
-
 procedure TBPRallyModeForm.btnSaveSettingClick(Sender: TObject);
 var
   RR: TRallyInfoRec;
@@ -313,7 +280,6 @@ begin
       BPMsgBox(Self.Handle, mtWarning, '알림', '대회 설정 정보를 저장할 수 없습니다.' + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
 end;
-
 procedure TBPRallyModeForm.btnDoAssignClick(Sender: TObject);
 begin
   if (V2.DataController.DataSet.RecordCount = 0) or
@@ -322,14 +288,12 @@ begin
     Exit;
   DoAssignRally;
 end;
-
 procedure TBPRallyModeForm.V1CellDblClick(Sender: TcxCustomGridTableView;
   ACellViewInfo: TcxGridTableDataCellViewInfo; AButton: TMouseButton; AShift: TShiftState;
   var AHandled: Boolean);
 begin
   btnSelectRally.Click;
 end;
-
 procedure TBPRallyModeForm.V2rec_noGetDataText(Sender: TcxCustomGridTableItem; ARecordIndex: Integer; var AText: string);
 var
   LIndex: Integer;
@@ -337,7 +301,6 @@ begin
   LIndex := TcxGridDBBandedTableView(Sender.GridView).DataController.GetRowIndexByRecordIndex(ARecordIndex, False);
   AText := IntToStr(LIndex + 1);
 end;
-
 procedure TBPRallyModeForm.RefreshRallyList(const AShowMsg: Boolean);
 var
   LStartDate, LEndDate, LTitle, LResMsg: string;
@@ -361,7 +324,6 @@ begin
         BPMsgBox(Self.Handle, mtWarning, '알림', '대회 목록을 조회할 수 없습니다.' + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
 end;
-
 function TBPRallyModeForm.RefreshEntryList(var AResMsg: string): Boolean;
 begin
   Result := False;
@@ -376,7 +338,6 @@ begin
       AResMsg := E.Message;
   end;
 end;
-
 function TBPRallyModeForm.CheckLaneReady: Boolean;
 var
   LLaneNo: ShortInt;
@@ -403,14 +364,12 @@ begin
     Free;
   end;
 end;
-
 procedure TBPRallyModeForm.DoAssignRally;
 var
   GA: TArray<TGameAssignRec>;
   LGame, LBaseLaneNo, LLaneNo, LBowler: ShortInt;
   LResMsg, LErrMsg: string;
   LIsError: Boolean;
-
   LReceiptLaneNo: ShortInt;
   LReceiptNo: string;
   LProdDetailDiv, LProdCode, LProdName: String;
@@ -420,7 +379,6 @@ begin
     if FWorking then
       Exit;
     FWorking := True;
-
     with BPDM.QRProdGame do
     try
       LProdCode := Global.StoreInfo.DefaultGameProdCode;
@@ -436,7 +394,6 @@ begin
     finally
       EnableControls;
     end;
-
 
     with V2.DataController.DataSet do
     try
@@ -457,13 +414,10 @@ begin
           Inc(LGame);
           SetLength(GA, LGame + 1);
           LBaseLaneNo := LLaneNo;
-
           if LReceiptLaneNo = -1 then
             LReceiptLaneNo := LLaneNo;
-
           LBowler := -1
         end;
-
         with GA[LGame] do
         begin
           LaneNo := LBaseLaneNo;
@@ -473,7 +427,6 @@ begin
           ShiftMethod := FShiftMethod;
           ShiftCount := FShiftCount;
           PrepareMin := Trunc(edtPrepareMin.Value);
-
           Inc(LBowler);
           SetLength(Bowlers, LBowler + 1);
           Bowlers[LBowler].Clear;
@@ -494,7 +447,6 @@ begin
         end;
         Next;
       end;
-
       LIsError := False;
       for var I: ShortInt := 0 to High(GA) do
         if not BPDM.SetHoldLane(GA[I].LaneNo, True, LErrMsg) then
@@ -525,14 +477,11 @@ begin
       BPMsgBox(Self.Handle, mtError, '알림', '대회 배정에 실패하였습니다.' + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
 end;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function OpenPlugin(AMsg: TPluginMessage=nil): TPluginModule;
 begin
   Result := TBPRallyModeForm.Create(Application, AMsg);
 end;
-
 exports
   OpenPlugin;
 end.

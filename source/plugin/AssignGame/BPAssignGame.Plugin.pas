@@ -850,6 +850,18 @@ begin
   Title := '예약 등록';
   ClearAssignList;
   BowlerCount := 1;
+
+  btnBowlerCountDec.Enabled := True;
+  btnBowlerCountInc.Enabled := True;
+  rdgBaseGameDiv.Enabled := True;
+  btnBaseGameCountDec.Enabled := True;
+  btnBaseGameCountInc.Enabled := True;
+  btnBaseGameMinDec.Enabled := True;
+  btnBaseGameMinInc.Enabled := True;
+  edtBaseProdName.Enabled := True;
+  btnBaseProdPopup.Enabled := True;
+  btnBaseProdClear.Enabled := True;
+
 end;
 procedure TBPAssignGameForm.btnDoAssignClick(Sender: TObject);
 begin
@@ -1271,13 +1283,13 @@ begin
     with TAssignControl(FAssignList.Objects[I]) do
     begin
       if BowlerId.IsEmpty then
-        //BowlerId := Format('%.2d%s', [BaseLaneNo, Char(65 + I)])
-        BowlerId := Format('%.2d%s', [BaseLaneNo, Char(nByte)])
+        BowlerId := Format('%.2d%s', [BaseLaneNo, Char(65 + I)]);
+      {  BowlerId := Format('%.2d%s', [BaseLaneNo, Char(nByte)])
       else
       begin
         sBowlerId := copy(BowlerId, 3, 1);
         nByte := Ord(sBowlerId[1]) + 1;
-      end;
+      end;}
     end;
   end;
 
@@ -1387,7 +1399,7 @@ end;
 procedure TBPAssignGameForm.DoEditGame;
 var
   BI: TBowlerRec;
-  LReceiptNo, LOldProdCode, LResMsg: string;
+  LReceiptNo, LOldProdCode, LResMsg, LBowlerId: string;
   LItemCount: ShortInt;
   LOldGameCount, LOldGameMin: Integer;
   LExist, LOldShoesRent: Boolean;
@@ -1503,8 +1515,9 @@ begin
           else
           begin
             { 볼러 추가 }
-            if not BPDM.AddBowler(LaneNo, AssignNo, BI, LResMsg) then
+            if not BPDM.AddBowler(LaneNo, AssignNo, BI, LResMsg, LBowlerId) then
               raise Exception.Create(LResMsg);
+            BI.ProdInfo.BowlerId := LBowlerId;
             { 추가된 이용 상품 업데이트 }
             if (not BI.ProdInfo.ProdCode.IsEmpty) and
                (not BPDM.UpdateSaleItem(LReceiptNo, BI.ProdInfo, LResMsg)) then
@@ -1516,7 +1529,8 @@ begin
               BI.ProdInfo.Clear;
               BI.ProdInfo.AssignLaneNo := AssignLaneNo;
               BI.ProdInfo.AssignNo := AssignNo;
-              BI.ProdInfo.BowlerId := BowlerId;
+              //BI.ProdInfo.BowlerId := BowlerId;
+              BI.ProdInfo.BowlerId := LBowlerId;
               BI.ProdInfo.ProdDiv := CO_PROD_RENT;
               BI.ProdInfo.ProdDetailDiv := Global.StoreInfo.ShoesRentProdDetailDiv;
               BI.ProdInfo.ProdCode := Global.StoreInfo.ShoesRentProdCode;
@@ -2011,7 +2025,8 @@ begin
   LabelBowlerId := TLabel.Create(Self);
   with LabelBowlerId do
   begin
-    Alignment := taCenter;
+    //Alignment := taCenter;
+    Alignment := taRightJustify;
     AutoSize := False;
     Caption := '';
     Height := 27;

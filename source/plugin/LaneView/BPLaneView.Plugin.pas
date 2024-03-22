@@ -33,7 +33,8 @@ uses
 const
   LCN_TOOLBTN_COUNT    = 12;
   LCN_LANE_INTERVAL    = 5;
-  LCN_LANE_BASE_WIDTH  = 238;
+  //LCN_LANE_BASE_WIDTH  = 238; // 7개
+  LCN_LANE_BASE_WIDTH  = 186;   // 9개
   LCN_LANE_BASE_HEIGHT = 354; //384;
 
 type
@@ -208,6 +209,7 @@ type
     procedure FirstLaneClick;
     procedure DoPinSetterOnOff(const AJobName: string; const AValue: Boolean);
     procedure DoGameMonitorOnOff(const AJobName: string; const AValue: Boolean);
+    procedure DoLaneHold(const AValue: Boolean);
     procedure DoAssign(const ALaneNo: ShortInt; const AReservedAssignNo: string='');
     procedure DoCancelReservedGame(const AJobName, AAssignNo, AReceiptNo: string; const ALaneNo: ShortInt);
     procedure DoLaneControl;
@@ -353,7 +355,9 @@ begin
   else if (AMsg.Command = CPC_CLOSE) then
     Self.Close
   else if (AMsg.Command = CPC_RESIZE) then
-    ResizeControl;
+    ResizeControl
+  else if (AMsg.Command = CPC_LANE_HOLD) then
+    DoLaneHold(AMsg.ParamByBoolean(CPP_VALUE));
 end;
 
 procedure TBPLaneViewForm.PluginModuleResize(Sender: TObject);
@@ -456,16 +460,17 @@ begin
     if (Global.LaneInfo.SelectedLanes.Count = 0) then
       raise Exception.Create('선택된 레인이 없습니다.');
     if (BPMsgBox(Self.Handle, mtConfirmation, '확인',
-          ErrorString(Format('<B>%s</B>', [Global.LaneInfo.SelectedLaneList])) + ' 레인에 ' + ErrorString(Format('<B>%s</B>', [AJobName])) + ' 명령을 전송하시겠습니까?' + _BR +
-          '대기 상태인 레인은 적용되지 않습니다.', ['예', '아니오']) <> mrOk) then
+          //ErrorString(Format('<B>%s</B>', [Global.LaneInfo.SelectedLaneList])) + ' 레인에 ' + ErrorString(Format('<B>%s</B>', [AJobName])) + ' 명령을 전송하시겠습니까?' + _BR + '대기 상태인 레인은 적용되지 않습니다.',
+          ErrorString(Format('<B>%s</B>', [Global.LaneInfo.SelectedLaneList])) + ' 레인에 ' + ErrorString(Format('<B>%s</B>', [AJobName])) + ' 명령을 전송하시겠습니까?',
+          ['예', '아니오']) <> mrOk) then
       Exit;
 
     for var I: ShortInt := 0 to Pred(Global.LaneInfo.SelectedLanes.Count) do
     begin
       LLaneNo := Global.LaneInfo.SelectedLanes.Item[I];
       LLaneIndex := Global.LaneInfo.LaneIndex(LLaneNo);
-      if (LLaneIndex = -1) or
-         (Global.LaneInfo.Lanes[LLaneIndex].LaneStatus = CO_LANE_READY) then
+      //if (LLaneIndex = -1) or (Global.LaneInfo.Lanes[LLaneIndex].LaneStatus = CO_LANE_READY) then
+      if (LLaneIndex = -1) then
         Continue;
       if not BPDM.SetPinSetter(LLaneNo, AValue, LResMsg) then
         raise Exception.Create(LResMsg);
@@ -501,6 +506,35 @@ begin
     on E: Exception do
       BPMsgBox(Self.Handle, mtError, '알림',
         Format('%s 명령 전송에 실패하였습니다.', [AJobName]) + _BR + ErrorString(E.Message), ['확인'], 5);
+  end;
+end;
+
+procedure TBPLaneViewForm.DoLaneHold(const AValue: Boolean);
+var
+  LLaneNo: ShortInt;
+  LResMsg, LJobName: string;
+begin
+  try
+    LJobName := '임시 예약' + IfThen(AValue = False, ' 취소', '');
+    if (Global.LaneInfo.SelectedLanes.Count = 0) then
+      raise Exception.Create('선택된 레인이 없습니다.');
+    if (BPMsgBox(Self.Handle, mtConfirmation, '확인',
+          ErrorString(Format('<B>%s</B>', [Global.LaneInfo.SelectedLaneList])) + ' 레인에 ' + ErrorString(Format('<B>%s</B>', [LJobName])) + ' 명령을 전송하시겠습니까?'
+          , ['예', '아니오']) <> mrOk) then
+      Exit;
+
+    for var I: ShortInt := 0 to Pred(Global.LaneInfo.SelectedLanes.Count) do
+    begin
+      LLaneNo := Global.LaneInfo.SelectedLanes.Item[I];
+      if not BPDM.SetHoldLane(LLaneNo, AValue, LResMsg) then
+        raise Exception.Create(LResMsg);
+    end;
+    SendToMainForm(CPC_GAME_REFRESH_DELAY);
+    BPMsgBox(Self.Handle, mtInformation, '알림', Format('%s 명령 전송을 완료하였습니다.', [LJobName]), ['확인'], 5);
+  except
+    on E: Exception do
+      BPMsgBox(Self.Handle, mtError, '알림',
+        Format('%s 명령 전송에 실패하였습니다.', [LJobName]) + _BR + ErrorString(E.Message), ['확인'], 5);
   end;
 end;
 
@@ -954,16 +988,16 @@ begin
     end;
 
     mniGameAssign.Enabled := LEnabled;
-      mniGameAssign.Caption := IfThen(FPopupLaneStatus = CO_LANE_RESERVED, '예약 게임 수정', '배정 관리');
+    mniGameAssign.Caption := IfThen(FPopupLaneStatus = CO_LANE_RESERVED, '예약 게임 수정', '배정 관리');
     mniSaleView.Enabled := LEnabled;
     mniSetChangePaid.Enabled := (LPaymentType = CO_PAYTYPE_DEFERRED);
     mniScoreEdit.Enabled := (FPopupLaneStatus in [CO_LANE_BUSY, CO_LANE_END_UNPAID]);
     mniLaneHold.Enabled := (FPopupLaneStatus in [CO_LANE_READY, CO_LANE_HOLD]);
-      mniLaneHold.Caption := '임시 예약' + IfThen(FPopupLaneStatus = CO_LANE_HOLD, ' 취소', '');
+    mniLaneHold.Caption := '임시 예약' + IfThen(FPopupLaneStatus = CO_LANE_HOLD, ' 취소', '');
     mniGameCancel.Enabled := (FPopupLaneStatus in [CO_LANE_READY, CO_LANE_RESERVED, CO_LANE_BUSY, CO_LANE_END_UNPAID]);
     mniGameCancel.Caption := IfThen(FPopupLaneStatus = CO_LANE_RESERVED, '예약 ', '') + '게임 취소';
     mniLeagueMode.Enabled := (FPopupLaneStatus in [CO_LANE_RESERVED, CO_LANE_BUSY]);
-      mniLeagueMode.Caption := IfThen(LLeagueMode, ' 오픈', '리그') + ' 게임으로 전환';
+    mniLeagueMode.Caption := IfThen(LLeagueMode, ' 오픈', '리그') + ' 게임으로 전환';
     mniGameNext.Enabled := (FPopupLaneStatus in [CO_LANE_RESERVED, CO_LANE_BUSY, CO_LANE_END_UNPAID]);
     mniBowlerPause.Enabled := (RecordCount > 0);
     if mniBowlerPause.Enabled then

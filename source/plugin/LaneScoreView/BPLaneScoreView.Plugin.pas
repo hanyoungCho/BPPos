@@ -1089,6 +1089,7 @@ function TBowlerPanel.ComputeScore(const AIndex: ShortInt): Boolean;
   end;
 var
   LIndex: ShortInt;
+  nThrowString1, nThrowString2: Integer;
 begin
   if (not AIndex in [0..High(Frames)]) or
      (not CheckThrowString1(AIndex)) then
@@ -1125,17 +1126,36 @@ begin
             else
             begin
               if (Frames[AIndex].ThrowString2 = CO_PIN_SPARE) then
-                Frames[AIndex].ScoreString := IntToStr(10 + StrToInt(Frames[AIndex + 1].ThrowString1))
+              begin
+                if Frames[AIndex + 1].ThrowString1 = CO_PIN_GUTTER then
+                  Frames[AIndex].ScoreString := IntToStr(10 + 0)
+                else
+                  Frames[AIndex].ScoreString := IntToStr(10 + StrToInt(Frames[AIndex + 1].ThrowString1));
+              end
               else
               begin
+                if Frames[AIndex].ThrowString1.isEmpty then
+                  nThrowString1 := 0
+                else if Frames[AIndex].ThrowString1 = CO_PIN_GUTTER then
+                  nThrowString1 := 0
+                else
+                  nThrowString1 := StrToInt(Frames[AIndex].ThrowString1);
+
+                if Frames[AIndex].ThrowString2.IsEmpty then
+                  nThrowString2 := 0
+                else if Frames[AIndex].ThrowString2 = CO_PIN_GUTTER then
+                  nThrowString2 := 0
+                else
+                  nThrowString2 := StrToInt(Frames[AIndex].ThrowString2);
+
                 if Frames[AIndex].ThrowString2.IsEmpty or
-                   (StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2) > 9) then
+                   (nThrowString1 + nThrowString2 > 9) then
                 begin
                   for LIndex := AIndex to 9 do
                     Frames[LIndex].ScoreString := '';
                 end
                 else
-                  Frames[AIndex].ScoreString := IntToStr(StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2));
+                  Frames[AIndex].ScoreString := IntToStr(nThrowString1 + nThrowString2);
               end
             end;
           end;
@@ -1170,14 +1190,28 @@ begin
                 Frames[AIndex].ScoreString := IntToStr(10 + StrToInt(Frames[AIndex + 1].ThrowString1))
               else
               begin
+                if Frames[AIndex].ThrowString1.IsEmpty then
+                  nThrowString1 := 0
+                else if Frames[AIndex].ThrowString1 = CO_PIN_GUTTER then
+                  nThrowString1 := 0
+                else
+                  nThrowString1 := StrToInt(Frames[AIndex].ThrowString1);
+
+                if Frames[AIndex].ThrowString2.IsEmpty then
+                  nThrowString2 := 0
+                else if Frames[AIndex].ThrowString2 = CO_PIN_GUTTER then
+                  nThrowString2 := 0
+                else
+                  nThrowString2 := StrToInt(Frames[AIndex].ThrowString2);
+
                 if Frames[AIndex].ThrowString2.IsEmpty or
-                   (StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2) > 9) then
+                   (nThrowString1 + nThrowString2 > 9) then
                 begin
                   for LIndex := AIndex to 9 do
                     Frames[LIndex].ScoreString := '';
                 end
                 else
-                  Frames[AIndex].ScoreString := IntToStr(StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2));
+                  Frames[AIndex].ScoreString := IntToStr(nThrowString1 + nThrowString2);
               end
             end;
           end;
@@ -1218,11 +1252,25 @@ begin
                 Frames[AIndex].ScoreString := IntToStr(10 + StrToInt(Frames[AIndex].ThrowString3))
               else
               begin
+                if Frames[AIndex].ThrowString1.IsEmpty then
+                  nThrowString1 := 0
+                else if Frames[AIndex].ThrowString1 = CO_PIN_GUTTER then
+                  nThrowString1 := 0
+                else
+                  nThrowString1 := StrToInt(Frames[AIndex].ThrowString1);
+
+                if Frames[AIndex].ThrowString2.isEmpty then
+                  nThrowString2 := 0
+                else if Frames[AIndex].ThrowString2 = CO_PIN_GUTTER then
+                  nThrowString2 := 0
+                else
+                  nThrowString2 := StrToInt(Frames[AIndex].ThrowString2);
+
                 if Frames[AIndex].ThrowString2.IsEmpty or
-                   (StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2) > 9) then
+                   (nThrowString1 + nThrowString2 > 9) then
                   Frames[AIndex].ScoreString := ''
                 else
-                  Frames[AIndex].ScoreString := IntToStr(StrToInt(Frames[AIndex].ThrowString1) + StrToInt(Frames[AIndex].ThrowString2));
+                  Frames[AIndex].ScoreString := IntToStr(nThrowString1 + nThrowString2);
               end
             end;
           end;

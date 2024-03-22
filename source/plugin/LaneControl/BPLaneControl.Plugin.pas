@@ -333,9 +333,9 @@ begin
         ;
       9: //레인 자동 이동
         ;
-      10: //핀 세터 On
+      10: //기계 On
         DoPinSetterOnOff(LJobName, True);
-      11: //핀 세터 Off
+      11: //기계 Off
         DoPinSetterOnOff(LJobName, False);
       12: //모니터 On
         DoGameMonitorOnOff(LJobName, True);

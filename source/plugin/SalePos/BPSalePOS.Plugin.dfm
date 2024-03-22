@@ -2187,15 +2187,6 @@ object BPSalePosForm: TBPSalePosForm
             ExplicitTop = -1
           end
         end
-        object Memo1: TMemo
-          Left = 160
-          Top = 224
-          Width = 185
-          Height = 201
-          Lines.Strings = (
-            'Memo1')
-          TabOrder = 3
-        end
       end
       object pgcSaleDetail: TPageControl
         Left = 0
@@ -2263,7 +2254,7 @@ object BPSalePosForm: TBPSalePosForm
           object G2: TcxGrid
             Left = 0
             Top = 0
-            Width = 886
+            Width = 576
             Height = 210
             Margins.Left = 5
             Margins.Top = 5
@@ -2282,9 +2273,11 @@ object BPSalePosForm: TBPSalePosForm
             LookAndFeel.NativeStyle = False
             LookAndFeel.ScrollbarMode = sbmTouch
             LookAndFeel.ScrollMode = scmSmooth
+            ExplicitWidth = 586
             object V2: TcxGridDBBandedTableView
               Navigator.Buttons.CustomButtons = <>
               ScrollbarAnnotations.CustomAnnotations = <>
+              OnFocusedRecordChanged = V2FocusedRecordChanged
               DataController.DataSource = dsrPayment
               DataController.Summary.DefaultGroupSummaryItems = <>
               DataController.Summary.FooterSummaryItems = <
@@ -2417,10 +2410,156 @@ object BPSalePosForm: TBPSalePosForm
                 Position.ColIndex = 6
                 Position.RowIndex = 0
               end
+              object V2seq: TcxGridDBBandedColumn
+                DataBinding.FieldName = 'seq'
+                DataBinding.IsNullValueType = True
+                MinWidth = 0
+                Width = 0
+                Position.BandIndex = 0
+                Position.ColIndex = 7
+                Position.RowIndex = 0
+              end
             end
             object L2: TcxGridLevel
               GridView = V2
             end
+          end
+          object G4: TcxGrid
+            Left = 586
+            Top = 0
+            Width = 300
+            Height = 210
+            Margins.Left = 5
+            Margins.Top = 5
+            Margins.Right = 0
+            Align = alRight
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            Font.Charset = HANGEUL_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -15
+            Font.Name = 'Pretendard Variable'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            LookAndFeel.Kind = lfUltraFlat
+            LookAndFeel.NativeStyle = False
+            LookAndFeel.ScrollbarMode = sbmTouch
+            LookAndFeel.ScrollMode = scmSmooth
+            ExplicitLeft = 379
+            ExplicitTop = -3
+            object V4: TcxGridDBBandedTableView
+              Navigator.Buttons.CustomButtons = <>
+              ScrollbarAnnotations.CustomAnnotations = <>
+              DataController.DataSource = dsrPaymentSaleItem
+              DataController.Summary.DefaultGroupSummaryItems = <>
+              DataController.Summary.FooterSummaryItems = <
+                item
+                  Format = #44228
+                  Kind = skCount
+                  FieldName = 'seq'
+                  Column = V4prod_nm
+                end
+                item
+                  Format = ',0 ; -,0 '
+                  Kind = skSum
+                  FieldName = 'calc_sale_amt'
+                  Column = V4calc_sale_amt
+                end
+                item
+                  Format = ',0 ; -,0 '
+                  Kind = skSum
+                  FieldName = 'apply_dc_amt'
+                end>
+              DataController.Summary.SummaryGroups = <>
+              DataController.Summary.OnAfterSummary = V2DataControllerSummaryAfterSummary
+              OptionsCustomize.ColumnFiltering = False
+              OptionsCustomize.ColumnGrouping = False
+              OptionsCustomize.ColumnHidingOnGrouping = False
+              OptionsCustomize.ColumnMoving = False
+              OptionsCustomize.ColumnVertSizing = False
+              OptionsData.Deleting = False
+              OptionsData.Editing = False
+              OptionsData.Inserting = False
+              OptionsSelection.CellSelect = False
+              OptionsView.FocusRect = False
+              OptionsView.NoDataToDisplayInfoText = '<'#51312#54924#54624' '#45936#51060#53552#44032' '#50630#49845#45768#45796'>'
+              OptionsView.ScrollBars = ssVertical
+              OptionsView.ColumnAutoWidth = True
+              OptionsView.Footer = True
+              OptionsView.GridLines = glVertical
+              OptionsView.GroupByBox = False
+              OptionsView.BandHeaders = False
+              Styles.Header = BPDM.StyleHeader1
+              Styles.Inactive = BPDM.StyleSelection
+              Styles.Indicator = BPDM.StyleHeader1
+              Styles.Selection = BPDM.StyleSelection
+              Styles.BandHeader = BPDM.StyleHeader1
+              Bands = <
+                item
+                end>
+              object V4bowler_id: TcxGridDBBandedColumn
+                Caption = #48380#47084
+                DataBinding.FieldName = 'bowler_id'
+                DataBinding.IsNullValueType = True
+                HeaderAlignmentHorz = taCenter
+                Width = 75
+                Position.BandIndex = 0
+                Position.ColIndex = 1
+                Position.RowIndex = 0
+              end
+              object V4prod_cd: TcxGridDBBandedColumn
+                DataBinding.FieldName = 'prod_cd'
+                DataBinding.IsNullValueType = True
+                PropertiesClassName = 'TcxLabelProperties'
+                Properties.Alignment.Vert = taVCenter
+                HeaderAlignmentHorz = taCenter
+                MinWidth = 0
+                Width = 0
+                Position.BandIndex = 0
+                Position.ColIndex = 0
+                Position.RowIndex = 0
+              end
+              object V4prod_nm: TcxGridDBBandedColumn
+                Caption = #49345#54408#47749
+                DataBinding.FieldName = 'prod_nm'
+                DataBinding.IsNullValueType = True
+                PropertiesClassName = 'TcxLabelProperties'
+                Properties.Alignment.Vert = taVCenter
+                HeaderAlignmentHorz = taCenter
+                Width = 143
+                Position.BandIndex = 0
+                Position.ColIndex = 2
+                Position.RowIndex = 0
+              end
+              object V4calc_sale_amt: TcxGridDBBandedColumn
+                Caption = #49345#54408#44552#50529
+                DataBinding.FieldName = 'calc_sale_amt'
+                DataBinding.IsNullValueType = True
+                PropertiesClassName = 'TcxCurrencyEditProperties'
+                Properties.DisplayFormat = ',0 ; -,0 '
+                FooterAlignmentHorz = taRightJustify
+                HeaderAlignmentHorz = taCenter
+                Width = 80
+                Position.BandIndex = 0
+                Position.ColIndex = 3
+                Position.RowIndex = 0
+              end
+            end
+            object L4: TcxGridLevel
+              GridView = V4
+            end
+          end
+          object Panel1: TPanel
+            Left = 576
+            Top = 0
+            Width = 10
+            Height = 210
+            Align = alRight
+            BevelOuter = bvNone
+            ParentBackground = False
+            TabOrder = 3
+            ExplicitLeft = 566
           end
         end
         object tabCoupon: TTabSheet
@@ -3450,5 +3589,11 @@ object BPSalePosForm: TBPSalePosForm
     DataSet = BPDM.QRReceipt
     Left = 53
     Top = 224
+  end
+  object dsrPaymentSaleItem: TDataSource
+    AutoEdit = False
+    DataSet = BPDM.QRPaymentSaleItem
+    Left = 1325
+    Top = 824
   end
 end

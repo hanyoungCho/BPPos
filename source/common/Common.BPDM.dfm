@@ -1,9 +1,8 @@
 object BPDM: TBPDM
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Height = 858
-  Width = 1424
-  PixelsPerInch = 144
+  Height = 572
+  Width = 949
   object LocalDB: TABSDatabase
     CurrentVersion = '7.94 '
     DatabaseFileName = 'D:\Works\BowlingPick\project\pos\build\data\BPPOS.db'
@@ -13,8 +12,8 @@ object BPDM: TBPDM
     MultiUser = True
     SessionName = 'Default'
     SilentMode = True
-    Left = 372
-    Top = 48
+    Left = 248
+    Top = 32
   end
   object MariaDB: TUniConnection
     ProviderName = 'MySQL'
@@ -28,13 +27,13 @@ object BPDM: TBPDM
     AfterDisconnect = MariaDBAfterDisconnect
     OnError = MariaDBError
     OnConnectionLost = MariaDBConnectionLost
-    Left = 216
-    Top = 48
+    Left = 144
+    Top = 32
     EncryptedPassword = '9DFF90FF88FF93FF96FF91FF98FFCEFFCDFFCCFFDEFF'
   end
   object AntiFreeze: TIdAntiFreeze
-    Left = 60
-    Top = 48
+    Left = 40
+    Top = 32
   end
   object QRSaleItem: TABSQuery
     CurrentVersion = '7.94 '
@@ -50,8 +49,8 @@ object BPDM: TBPDM
       'FROM TBSaleItem A'
       'WHERE A.assign_lane_no = 0'
       'ORDER BY A.assign_lane_no, A.prod_div, A.prod_nm;')
-    Left = 528
-    Top = 132
+    Left = 352
+    Top = 88
   end
   object QRPayment: TABSQuery
     CurrentVersion = '7.94 '
@@ -70,8 +69,8 @@ object BPDM: TBPDM
       'FROM TBPayment A'
       'WHERE A.assign_lane_no = 0'
       'ORDER BY A.assign_lane_no, A.pay_method;')
-    Left = 528
-    Top = 216
+    Left = 352
+    Top = 144
   end
   object QRSaleItemPend: TABSQuery
     CurrentVersion = '7.94 '
@@ -83,8 +82,8 @@ object BPDM: TBPDM
     SQL.Strings = (
       'SELECT *'
       'FROM TBSaleItemPend;')
-    Left = 528
-    Top = 552
+    Left = 352
+    Top = 368
   end
   object QRPaymentPend: TABSQuery
     CurrentVersion = '7.94 '
@@ -96,8 +95,8 @@ object BPDM: TBPDM
     SQL.Strings = (
       'SELECT *'
       'FROM TBPaymentPend;')
-    Left = 528
-    Top = 636
+    Left = 352
+    Top = 424
   end
   object QRReceipt: TABSQuery
     CurrentVersion = '7.94 '
@@ -111,8 +110,8 @@ object BPDM: TBPDM
       'FROM TBReceipt A'
       'WHERE A.assign_lane_no = 0'
       'ORDER BY A.receipt_no;')
-    Left = 528
-    Top = 48
+    Left = 352
+    Top = 32
   end
   object QRMemberList: TABSQuery
     CurrentVersion = '7.94 '
@@ -159,8 +158,8 @@ object BPDM: TBPDM
       '  AND A.member_group_code = C.code'
       ')'
       'ORDER BY A.member_nm;')
-    Left = 1032
-    Top = 48
+    Left = 688
+    Top = 32
   end
   object QRProdGame: TABSQuery
     CurrentVersion = '7.94 '
@@ -171,8 +170,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTProdGame;')
-    Left = 864
-    Top = 132
+    Left = 576
+    Top = 88
   end
   object QRProdLocker: TABSQuery
     CurrentVersion = '7.94 '
@@ -183,8 +182,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTProdLocker;')
-    Left = 864
-    Top = 300
+    Left = 576
+    Top = 200
   end
   object QRProdGeneral: TABSQuery
     CurrentVersion = '7.94 '
@@ -195,8 +194,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTProdGeneral;')
-    Left = 864
-    Top = 384
+    Left = 576
+    Top = 256
   end
   object QRProdRent: TABSQuery
     CurrentVersion = '7.94 '
@@ -207,8 +206,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTProdRent ORDER BY sort_ord;')
-    Left = 864
-    Top = 468
+    Left = 576
+    Top = 312
   end
   object QRLaneList: TABSQuery
     CurrentVersion = '7.94 '
@@ -219,8 +218,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTLaneList;')
-    Left = 696
-    Top = 132
+    Left = 464
+    Top = 88
   end
   object QRLockerList: TABSQuery
     CurrentVersion = '7.94 '
@@ -231,8 +230,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTLockerList;')
-    Left = 696
-    Top = 216
+    Left = 464
+    Top = 144
   end
   object QRReceiptList: TABSQuery
     CurrentVersion = '7.94 '
@@ -245,8 +244,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTReceiptList;')
-    Left = 528
-    Top = 300
+    Left = 352
+    Top = 200
   end
   object QRSaleItemList: TABSQuery
     CurrentVersion = '7.94 '
@@ -259,8 +258,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTSaleItemList;')
-    Left = 528
-    Top = 384
+    Left = 352
+    Top = 256
   end
   object QRPaymentList: TABSQuery
     CurrentVersion = '7.94 '
@@ -273,8 +272,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTPaymentList;')
-    Left = 528
-    Top = 468
+    Left = 352
+    Top = 312
   end
   object QRPluList: TABSQuery
     CurrentVersion = '7.94 '
@@ -286,8 +285,8 @@ object BPDM: TBPDM
     SQL.Strings = (
       'SELECT * FROM MEMORY MTPluList'
       'ORDER BY prod_div, prod_detail_div, sort_ord;')
-    Left = 864
-    Top = 48
+    Left = 576
+    Top = 32
   end
   object QRGameList: TABSQuery
     CurrentVersion = '7.94 '
@@ -348,8 +347,8 @@ object BPDM: TBPDM
       '  A.lane_no = B.lane_no'
       ')'
       'ORDER BY A.lane_no, B.bowler_id;')
-    Left = 372
-    Top = 216
+    Left = 248
+    Top = 144
   end
   object QRWeatherWeek: TABSQuery
     CurrentVersion = '7.94 '
@@ -360,8 +359,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTWeatherWeek;')
-    Left = 1200
-    Top = 216
+    Left = 800
+    Top = 144
   end
   object QRWeatherToday: TABSQuery
     CurrentVersion = '7.94 '
@@ -372,12 +371,12 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTWeatherToday;')
-    Left = 1200
-    Top = 132
+    Left = 800
+    Top = 88
   end
   object MySQLUniProvider: TMySQLUniProvider
-    Left = 216
-    Top = 132
+    Left = 144
+    Top = 88
   end
   object SPGameStatus: TUniStoredProc
     StoredProcName = 'SP_GET_GAME_STATUS'
@@ -385,8 +384,8 @@ object BPDM: TBPDM
       'CALL SP_GET_GAME_STATUS(:p_store_cd)')
     Connection = MariaDB
     BeforeOpen = SPGameStatusBeforeOpen
-    Left = 216
-    Top = 216
+    Left = 144
+    Top = 144
     ParamData = <
       item
         DataType = ftString
@@ -407,8 +406,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTCodeList ORDER BY group_cd, sort_ord;')
-    Left = 696
-    Top = 48
+    Left = 464
+    Top = 32
   end
   object QRCreditCardList: TABSQuery
     CurrentVersion = '7.94 '
@@ -419,8 +418,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTCreditCardList;')
-    Left = 1200
-    Top = 48
+    Left = 800
+    Top = 32
   end
   object imcIcons: TImageCollection
     Images = <
@@ -2604,8 +2603,8 @@ object BPDM: TBPDM
               000049454E44AE426082}
           end>
       end>
-    Left = 60
-    Top = 300
+    Left = 40
+    Top = 200
   end
   object imlIcon32: TVirtualImageList
     Images = <
@@ -2937,8 +2936,8 @@ object BPDM: TBPDM
     ImageCollection = imcIcons
     Width = 32
     Height = 32
-    Left = 60
-    Top = 468
+    Left = 40
+    Top = 312
   end
   object imlIcon16: TVirtualImageList
     Images = <
@@ -3013,8 +3012,8 @@ object BPDM: TBPDM
         Name = 'trainers_16px'
       end>
     ImageCollection = imcIcons
-    Left = 60
-    Top = 384
+    Left = 40
+    Top = 256
   end
   object imcWeather: TImageCollection
     Images = <
@@ -4488,8 +4487,8 @@ object BPDM: TBPDM
               4E44AE426082}
           end>
       end>
-    Left = 60
-    Top = 216
+    Left = 40
+    Top = 144
   end
   object QRMembership: TABSQuery
     CurrentVersion = '7.94 '
@@ -4504,8 +4503,8 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTMembership A'
       'ORDER BY A.start_dt;')
-    Left = 1032
-    Top = 132
+    Left = 688
+    Top = 88
   end
   object QRMemberLocker: TABSQuery
     CurrentVersion = '7.94 '
@@ -4520,19 +4519,19 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTMemberLocker A'
       'ORDER BY A.locker_nm;')
-    Left = 1032
-    Top = 216
+    Left = 688
+    Top = 144
   end
   object csrGridStyle: TcxStyleRepository
-    Left = 60
-    Top = 132
-    PixelsPerInch = 144
+    Left = 40
+    Top = 88
+    PixelsPerInch = 96
     object StyleContentEven: TcxStyle
       AssignedValues = [svColor, svFont, svTextColor]
       Color = 16184823
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7105644
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = 7105644
@@ -4542,7 +4541,7 @@ object BPDM: TBPDM
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7105644
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = 7105644
@@ -4551,7 +4550,7 @@ object BPDM: TBPDM
       AssignedValues = [svFont]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
     end
@@ -4560,7 +4559,7 @@ object BPDM: TBPDM
       Color = 2982745
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = [fsBold]
       TextColor = clWhite
@@ -4570,7 +4569,7 @@ object BPDM: TBPDM
       Color = 9857565
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = clWhite
@@ -4579,7 +4578,7 @@ object BPDM: TBPDM
       AssignedValues = [svFont]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
     end
@@ -4588,7 +4587,7 @@ object BPDM: TBPDM
       Color = 10809855
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = clBlack
@@ -4598,7 +4597,7 @@ object BPDM: TBPDM
       Color = 4707838
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7105644
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = 7105644
@@ -4608,7 +4607,7 @@ object BPDM: TBPDM
       Color = 2982745
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = clWhite
@@ -4618,7 +4617,7 @@ object BPDM: TBPDM
       Color = 15790320
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = clBlack
@@ -4628,7 +4627,7 @@ object BPDM: TBPDM
       Color = 15790320
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 7105644
-      Font.Height = -23
+      Font.Height = -15
       Font.Name = 'Pretendard Variable'
       Font.Style = []
       TextColor = 7105644
@@ -4640,8 +4639,8 @@ object BPDM: TBPDM
       'CALL SP_GET_ASSIGN_LIST(:p_store_cd)')
     Connection = MariaDB
     BeforeOpen = SPAssignListBeforeOpen
-    Left = 216
-    Top = 300
+    Left = 144
+    Top = 200
     ParamData = <
       item
         DataType = ftString
@@ -4662,8 +4661,8 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTClubList A'
       'ORDER BY A.club_nm;')
-    Left = 696
-    Top = 300
+    Left = 464
+    Top = 200
   end
   object QRMemberGroupList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4677,8 +4676,8 @@ object BPDM: TBPDM
       'FROM MEMORY MTCodeList A'
       'WHERE A.group_cd = '#39'member_group_code'#39
       'ORDER BY A.sort_ord, A.code;')
-    Left = 696
-    Top = 384
+    Left = 464
+    Top = 256
   end
   object QRAssignList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4693,8 +4692,8 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTAssignList A'
       'ORDER BY A.reserve_datetime;')
-    Left = 372
-    Top = 300
+    Left = 248
+    Top = 200
   end
   object QRReceiptPend: TABSQuery
     CurrentVersion = '7.94 '
@@ -4706,8 +4705,8 @@ object BPDM: TBPDM
     SQL.Strings = (
       'SELECT *'
       'FROM TBReceiptPend;')
-    Left = 528
-    Top = 720
+    Left = 352
+    Top = 480
   end
   object QRProdMembership: TABSQuery
     CurrentVersion = '7.94 '
@@ -4720,8 +4719,8 @@ object BPDM: TBPDM
       'SELECT *'
       'FROM MEMORY MTProdGame'
       'WHERE membership_yn = True;')
-    Left = 864
-    Top = 216
+    Left = 576
+    Top = 144
   end
   object QRRallyList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4736,8 +4735,8 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTRallyList A'
       'ORDER BY A.reg_datetime;')
-    Left = 372
-    Top = 384
+    Left = 248
+    Top = 256
   end
   object QRRallyEntryList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4750,8 +4749,8 @@ object BPDM: TBPDM
       'SELECT A.*'
       'FROM MEMORY MTRallyEntryList A'
       'ORDER BY A.lane_no, A.entry_seq;')
-    Left = 372
-    Top = 468
+    Left = 248
+    Top = 312
   end
   object QRReserveList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4813,8 +4812,8 @@ object BPDM: TBPDM
       ')'
       'WHERE A.assign_no = :p_assign_no'
       'ORDER BY A.bowler_seq;')
-    Left = 372
-    Top = 552
+    Left = 248
+    Top = 368
     ParamData = <
       item
         DataType = ftUnknown
@@ -4831,8 +4830,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTScorePrintList;')
-    Left = 1116
-    Top = 528
+    Left = 744
+    Top = 352
   end
   object QRScorePrintDetailList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4843,8 +4842,8 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTScorePrintDetailList;')
-    Left = 1116
-    Top = 612
+    Left = 744
+    Top = 408
   end
   object QRScorePrintGameList: TABSQuery
     CurrentVersion = '7.94 '
@@ -4855,7 +4854,24 @@ object BPDM: TBPDM
     RequestLive = True
     SQL.Strings = (
       'SELECT * FROM MEMORY MTScorePrintGameList;')
-    Left = 1116
-    Top = 696
+    Left = 744
+    Top = 464
+  end
+  object QRPaymentSaleItem: TABSQuery
+    CurrentVersion = '7.94 '
+    DatabaseName = 'DBLocal'
+    SessionName = 'Default'
+    InMemory = False
+    ReadOnly = False
+    AfterOpen = QRSaleItemAfterOpen
+    OnCalcFields = QRSaleItemCalcFields
+    RequestLive = True
+    SQL.Strings = (
+      'SELECT A.*'
+      'FROM TBSaleItem A'
+      'WHERE A.assign_lane_no = 0'
+      'ORDER BY A.assign_lane_no, A.prod_div, A.prod_nm;')
+    Left = 464
+    Top = 320
   end
 end
